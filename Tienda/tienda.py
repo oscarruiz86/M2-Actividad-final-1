@@ -167,9 +167,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
 # import sqlite3
 
 # def perro():
