@@ -1,102 +1,33 @@
+import argparse
+from functools import wraps
 from flask import Flask, request, jsonify
-import sqlite3
+
+from CRUDProductos import CRUDProductos
+from loadConfig import LoadConfig
+
 
 app = Flask(__name__)
 
-class Producto:
-    def __init__(self, id_producto, nombre, unidad_disponible, precio,unidad_vendida=0):
-        self.id_producto = id_producto
-        self.nombre = nombre
-        self.unidad_disponible = unidad_disponible        
-        self.precio = precio
-        self.unidad_vendida = unidad_vendida
+crud = CRUDProductos()
+config = LoadConfig()
 
-class CRUDProductos:
-    def __init__(self, nombre_base_datos):
-        self.nombre_base_datos = nombre_base_datos
-
-    def crear_tabla_productos(self):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS productos (
-                            id INTEGER PRIMARY KEY,
-                            nombre TEXT,
-                            unidad_disponible INTEGER DEFAULT 0,
-                            precio REAL,
-                            unidad_vendida INTEGER DEFAULT 0)''')
-        conn.commit()
-        conn.close()
-
-    def insertar_producto(self, producto):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        cursor.execute('''INSERT INTO productos (nombre, unidad_disponible, precio) VALUES (?, ?, ?)''',
-                       (producto.nombre, producto.unidad_disponible, producto.precio))
-        conn.commit()
-        conn.close()
-
-    def obtener_productos(self,id_producto=None):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()        
-        if(id_producto is not None):
-            select='''SELECT * FROM productos WHERE id = ?'''
-            cursor.execute(select, (id_producto,))         
-            data = Producto(*cursor.fetchone())
-        else:
-            select = '''SELECT * FROM productos'''
-            cursor.execute(select)
-            filas = cursor.fetchall()
-            data = []
-            for fila in filas:
-                data.append(Producto(*fila))
-        conn.close()
-        return data
-
-    def actualizar_producto(self, id_producto, nombre, unidad_disponible, precio):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        cursor.execute('''UPDATE productos SET nombre=?, unidad_disponible=?, precio=? WHERE id=?''',
-                       (nombre, unidad_disponible, precio, id_producto))
-        conn.commit()
-        conn.close()
-
-    def vender_producto(self, id_producto):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        producto_tienda = self.obtener_productos(id_producto)
-
-        unidad_vendida = producto_tienda.unidad_vendida+1
-        unidad_disponible = producto_tienda.unidad_disponible-1
-
-        if(unidad_disponible >= 0 and producto_tienda.precio>0):
-            cursor.execute('''UPDATE productos SET unidad_vendida=?, unidad_disponible=? WHERE id=?''',
-                        (unidad_vendida, unidad_disponible, id_producto))
-            conn.commit()
-            conn.close()
-            return True
-        return False
-
-    def actualizar_precio_producto(self, id_producto, precio):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        cursor.execute('''UPDATE productos SET precio=? WHERE id=?''',
-                       (precio, id_producto))
-        conn.commit()
-        conn.close()
-
-    def eliminar_producto(self, id_producto):
-        conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()
-        cursor.execute('''DELETE FROM productos WHERE id=?''', (id_producto,))
-        conn.commit()
-        conn.close()
+#validador de api key
+def validar_api_key(f):
+    @wraps(f)
+    def decorador(*args, **kwargs):
+        api_key = request.headers.get('API-Key')         
+        # Aquí deberías validar la API key, por ejemplo, comparándola con una lista de claves válidas
+        claves_validas = config.get_api_key()
+        if api_key not in claves_validas:
+            return jsonify({'mensaje': 'Clave API inválida'}), 401
+        
+        # Si la API key es válida, ejecuta la vista protegida
+        return f(*args, **kwargs)
+    return decorador
 
 # Rutas CRUD
-
-crud = CRUDProductos('productos.db')
-crud.crear_tabla_productos()
-
 @app.route('/productos', methods=['GET', 'POST'])
+@validar_api_key
 def productos():
     if request.method == 'GET':
         productos = crud.obtener_productos()
@@ -108,6 +39,7 @@ def productos():
         return jsonify({'message': 'Producto creado correctamente'}), 201
 
 @app.route('/productos/<int:id_producto>', methods=['PUT', 'DELETE','GET',])
+@validar_api_key
 def producto(id_producto):
     if request.method == 'PUT':
         data = request.json
@@ -121,6 +53,7 @@ def producto(id_producto):
         return jsonify(vars(producto))
     
 @app.route('/productos/<int:id_producto>/editar-precio', methods=['PUT',])
+@validar_api_key
 def producto_editar_precio(id_producto):
     if request.method == 'PUT':
         data = request.json
@@ -128,6 +61,7 @@ def producto_editar_precio(id_producto):
         return jsonify({'message': 'Producto actualizado correctamente'})    
     
 @app.route('/productos/<int:id_producto>/venta', methods=['PUT',])
+@validar_api_key
 def producto_venta(id_producto):
     if request.method == 'PUT':
         respuesta = crud.vender_producto(id_producto)
@@ -135,8 +69,22 @@ def producto_venta(id_producto):
             return jsonify({'message': 'Producto actualizado correctamente'})    
         return jsonify({'error': 'Error al vender producto'})    
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+def inicio(servidor,puerto,config_path,key):    
+    cargar_configuracion = config.cargar_configuracion(config_path)
+    config.set_api_key(key)
+    crud.seleccionarBD(cargar_configuracion["basedatos"]["path"])
+    crud.crear_tabla_productos()
+    app.run(host=servidor, port=puerto)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--servidor",default='localhost', help="servidor")
+parser.add_argument("--puerto", default=5000, help="puerto")
+parser.add_argument("config", help="config")
+parser.add_argument("key", help="key")
+args = parser.parse_args()
+inicio(args.servidor,args.puerto,args.config,args.key)
+
 
 
 
