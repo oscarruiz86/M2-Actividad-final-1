@@ -1,0 +1,4 @@
+basedatos:
+  path: almacen.db
+  consumidor_almacen: API-Key
+  consumidor_almacen_key: Almacen

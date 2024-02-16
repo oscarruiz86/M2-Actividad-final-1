@@ -1,17 +1,14 @@
 import argparse
 from functools import wraps
 from flask import Flask, request, jsonify
-
-from CRUDProductos import CRUDProductos, Producto
-from almacen import Almacen
+from CRUDArticulos import Articulo, CRUDArticulos
 from loadConfig import LoadConfig
 
 
 app = Flask(__name__)
 
-crud = CRUDProductos()
+crud = CRUDArticulos()
 config = LoadConfig()
-almacen = Almacen()
 
 #validador de api key
 def validar_api_key(f):
@@ -28,76 +25,63 @@ def validar_api_key(f):
     return decorador
 
 # Rutas CRUD
-@app.route('/productos', methods=['GET', 'POST'])
+@app.route('/articulos', methods=['GET', 'POST'])
 @validar_api_key
-def productos():
+def articulos():
     if request.method == 'GET':
-        productos = crud.obtener_productos()
-        return jsonify([vars(producto) for producto in productos])
+        articulos = crud.obtener_articulos()
+        return jsonify([vars(articulo) for articulo in articulos])
     elif request.method == 'POST':
         data = request.json
-        producto = Producto(None, data['nombre'], data['unidad_disponible'], data['precio'], data['id_articulo'])
-        crud.insertar_producto(producto)
-        return jsonify({'message': 'Producto creado correctamente'}), 201
+        articulo = Articulo(None, data['nombre'], data['unidad_disponible'], data['disponible'])
+        crud.insertar_articulo(articulo)
+        return jsonify({'message': 'Articulo creado correctamente'}), 201
 
-@app.route('/productos/<int:id_producto>', methods=['PUT', 'DELETE','GET',])
+@app.route('/articulos/<int:id_articulo>', methods=['PUT', 'DELETE','GET',])
 @validar_api_key
-def producto(id_producto):
+def articulo(id_articulo):
     if request.method == 'PUT':
         data = request.json
-        crud.actualizar_producto(id_producto, data['nombre'], data['unidad_disponible'], data['precio'])
-        return jsonify({'message': 'Producto actualizado correctamente'})
+        crud.actualizar_articulo(id_articulo, data['nombre'], data['unidad_disponible'], data['disponible'])
+        return jsonify({'message': 'Articulo actualizado correctamente'})
     elif request.method == 'DELETE':
-        crud.eliminar_producto(id_producto)
-        return jsonify({'message': 'Producto eliminado correctamente'}), 204
+        crud.eliminar_articulo(id_articulo)
+        return jsonify({'message': 'Articulo eliminado correctamente'}), 204
     elif request.method == 'GET':
-        producto = crud.obtener_productos(id_producto)
-        return jsonify(vars(producto))
+        articulo = crud.obtener_articulos(id_articulo)
+        return jsonify(vars(articulo))
     
-@app.route('/productos/<int:id_producto>/editar-precio', methods=['PUT',])
+@app.route('/articulos/<int:id_articulo>/recepcion', methods=['PUT',])
 @validar_api_key
-def producto_editar_precio(id_producto):
+def articulo_recepcion(id_articulo):
     if request.method == 'PUT':
         data = request.json
-        crud.actualizar_precio_producto(id_producto, data['precio'])
-        return jsonify({'message': 'Producto actualizado correctamente'})    
-    
-@app.route('/productos/<int:id_producto>/venta', methods=['PUT',])
-@validar_api_key
-def producto_venta(id_producto):
-    if request.method == 'PUT':
-        respuesta = crud.vender_producto(id_producto)
-        if(respuesta):
-            return jsonify({'message': 'Producto actualizado correctamente'})    
-        return jsonify({'error': 'Error al vender producto'})   
+        crud.actualizar_cantidad(id_articulo, data['cantidad'],'recepcion')
+        return jsonify({'message': 'Articulo actualizado correctamente'})
 
-@app.route('/productos/<int:id_producto>/traslado', methods=['PUT',])
+@app.route('/articulos/<int:id_articulo>/salida', methods=['PUT',])
 @validar_api_key
-def producto_traslado(id_producto):
+def articulo_salida(id_articulo):
     if request.method == 'PUT':
         data = request.json
-        respuesta = almacen.trasladoTiendo(crud,id_producto,data['cantidad'])
-        if(respuesta):
-            return jsonify({'message': 'Traslado de prodcuto realizado correctamente'})    
-        return jsonify({'error': 'Error al vender producto'})  
+        crud.actualizar_cantidad(id_articulo, data['cantidad'],'salida')
+        return jsonify({'message': 'Articulo actualizado correctamente'})    
 
+    
 
-def inicio(servidor,puerto,config_path,key):    
+def inicio(servidor,puerto,config_path):    
     cargar_configuracion = config.cargar_configuracion(config_path)
-    config.set_api_key(key)
+    config.set_api_key(cargar_configuracion["basedatos"]["consumidor_almacen_key"])
     crud.seleccionarBD(cargar_configuracion["basedatos"]["path"])
-    crud.crear_tabla_productos()
-    #cargar inventario inicial.
-    almacen.cargarInvetarioInicial(crud)
+    crud.crear_tabla_articulos()
     app.run(host=servidor, port=puerto)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--servidor",default='localhost', help="servidor")
 parser.add_argument("--puerto", default=5000, help="puerto")
 parser.add_argument("config", help="config")
-parser.add_argument("key", help="key")
 args = parser.parse_args()
-inicio(args.servidor,args.puerto,args.config,args.key)
+inicio(args.servidor,args.puerto,args.config)
 
 
 
@@ -134,7 +118,7 @@ inicio(args.servidor,args.puerto,args.config,args.key)
 # def perro():
 #     '''crear tabla'''
 #     dbStructure= """
-#             CREATE TABLE IF NOT EXISTS productos (
+#             CREATE TABLE IF NOT EXISTS articulos (
 # 	        id INTEGER PRIMARY KEY,
 # 	        nombre TEXT NOT NULL,
 # 	        unidad_disponible INTEGER NOT NULL,
@@ -148,14 +132,14 @@ inicio(args.servidor,args.puerto,args.config,args.key)
 #     cursor.execute(dbStructure)
 
 #     # Definir la sentencia de inserción
-#     sql_insert = '''INSERT INTO productos (nombre, unidad_disponible, precio) VALUES (?, ?, ?)'''
+#     sql_insert = '''INSERT INTO articulos (nombre, unidad_disponible, precio) VALUES (?, ?, ?)'''
 #     datos = ('tv', '22', '8.55')
 #     cursor.execute(sql_insert, datos)
 #     # Guardar los cambios
 #     con.commit()
 
 #     # Definir la sentencia de actualización
-#     sql_update = '''UPDATE productos
+#     sql_update = '''UPDATE articulos
 #                     SET nombre = ?,
 #                         unidad_disponible = ?,
 #                         precio = ?
@@ -170,7 +154,7 @@ inicio(args.servidor,args.puerto,args.config,args.key)
 #     '''slectt''''
 #     # Definir la consulta SELECT con la cláusula WHERE
 #     sql_select = '''SELECT * 
-#                     FROM productos 
+#                     FROM articulos 
 #                     WHERE id = ?'''
 
 #     # Valor para la condición
@@ -187,7 +171,7 @@ inicio(args.servidor,args.puerto,args.config,args.key)
 #         print(fila)
 
 #     '''delete'''
-#     sql_delete = '''DELETE FROM productos WHERE id = ?'''
+#     sql_delete = '''DELETE FROM articulos WHERE id = ?'''
 
 #     # Valor para la condición (opcional)
 #     valor_condicion = 15

@@ -1,16 +1,16 @@
 import sqlite3
 
 class Producto:
-    def __init__(self, id_producto, nombre, unidad_disponible, precio,unidad_vendida=0):
-        self.id_producto = id_producto
+    def __init__(self, id, nombre, unidad_disponible, precio,id_articulo,unidad_vendida=0):
+        self.id = id
         self.nombre = nombre
         self.unidad_disponible = unidad_disponible        
         self.precio = precio
         self.unidad_vendida = unidad_vendida
+        self.id_articulo = id_articulo
 
 class CRUDProductos:
-    # def __init__(self, nombre_base_datos):
-    #     self.nombre_base_datos = nombre_base_datos
+
     def seleccionarBD(self, nombre_base_datos):
         self.nombre_base_datos = nombre_base_datos
 
@@ -19,6 +19,7 @@ class CRUDProductos:
         cursor = conn.cursor()
         cursor.execute('''CREATE TABLE IF NOT EXISTS productos (
                             id INTEGER PRIMARY KEY,
+                            id_articulo INTEGER,
                             nombre TEXT,
                             unidad_disponible INTEGER DEFAULT 0,
                             precio REAL,
@@ -29,8 +30,8 @@ class CRUDProductos:
     def insertar_producto(self, producto):
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()
-        cursor.execute('''INSERT INTO productos (nombre, unidad_disponible, precio) VALUES (?, ?, ?)''',
-                       (producto.nombre, producto.unidad_disponible, producto.precio))
+        cursor.execute('''INSERT INTO productos (nombre, unidad_disponible, precio,id_articulo) VALUES (?, ?, ?, ?)''',
+                       (producto.nombre, producto.unidad_disponible, producto.precio,producto.id_articulo))
         conn.commit()
         conn.close()
 
@@ -38,11 +39,11 @@ class CRUDProductos:
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()        
         if(id_producto is not None):
-            select='''SELECT * FROM productos WHERE id = ?'''
+            select='''SELECT id,nombre, unidad_disponible, precio,id_articulo FROM productos WHERE id = ?'''
             cursor.execute(select, (id_producto,))         
             data = Producto(*cursor.fetchone())
         else:
-            select = '''SELECT * FROM productos'''
+            select = '''SELECT id,nombre, unidad_disponible, precio,id_articulo FROM productos'''
             cursor.execute(select)
             filas = cursor.fetchall()
             data = []
@@ -90,3 +91,4 @@ class CRUDProductos:
         conn.commit()
         conn.close()
 
+    

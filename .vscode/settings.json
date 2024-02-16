@@ -1,0 +1,17 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:M2_Actividad_final_1}/Almacen/almacen.db",
+            "name": "almacen"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:M2_Actividad_final_1}/Tienda/productos.db",
+            "name": "producto"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}
