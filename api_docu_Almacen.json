@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Actividad Final",
+    "description": "Creación API Almacen",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:5000/api/docs/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "almacen",
+      "description": "toda la información relacionada con la tienda",
+      "externalDocs": {
+        "description": "Se pueden en la siguiente URL",
+        "url": "https://localhost:5003"
+      }
+    },
+    {
+      "name": "articulos",
+      "description": "obtiene un listado de todos los articulos de un almacen",
+      "externalDocs": {
+        "description": "Se pueden consultar los servicios de los artículos en la siguiente URL",
+        "url": "https://localhost:5003/articulos"
+      }
+    }
+  ],
+  "paths": {
+    "/articulos": {
+      "get": {
+        "tags": [
+          "articulos"
+        ],
+        "summary": "Consulta todos los articulos disponibles en el almacen",
+        "description": "Consulta todos los articulos disponibles en el almacen",
+        "responses": {
+          "200": {
+            "description": "Se han obtenido los articulos correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "example": "Nombre de los articulos"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No se ha podido obtener los articulos correctamente"
+          },
+          "404": {
+            "description": "No se ha encontrado la página."
+          }
+        }
+      }
+    },
+    "/producto/id_articulo/recepcion": {
+      "put": {
+        "tags": [
+          "articulos"
+        ],
+        "summary": "Actualiza los articulos",
+        "description": "Actualiza los articulos disponibles de la tienda con un identificador en   concreto",
+        "requestBody": {
+          "description": "Actualiza los articulos disponibles de la tienda",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "example": "Nombre de los articulos"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Producto actualizado correctamente"
+          },
+          "400": {
+            "description": "No se ha podido actualizar el producto"
+          }
+        }
+      }
+    },
+    "/producto/id_articulo/salida": {
+      "get": {
+        "tags": [
+          "articulos"
+        ],
+        "summary": "Actualiza un producto con un id en concreto",
+        "description": "Actualiza el stock de los articulos que hay en el almacen",
+        "responses": {
+          "200": {
+            "description": "Stock de los articulos actualizados correctamente"
+          },
+          "400": {
+            "description": "No se ha podido actualizar el stock de los articulos"
+          }
+        }
+      }
+    }
+  }
+}
