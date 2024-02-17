@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  title: Actividad Final
+  description: Creación API Tienda
+  version: 1.0.0
+servers:
+  - url: https://localhost:5000/api/docs/
+tags:
+  - name: tienda
+    description: toda la información relacionada con la tienda
+    externalDocs:
+      description: Se pueden en la siguiente URL
+      url: https://localhost:5002
+  - name: productos
+    description: toda la información acerca de los articulos
+    externalDocs:
+      description: Se pueden consultar los servicios de los artículos en la siguiente URL
+      url: https://localhost:5003/productos
+paths:
+  /productos:
+    get:
+      tags:
+        - productos
+      summary: Consulta todos los productos disponibles en la tienda
+      description: Consulta todos los productos disponibles en la tienda
+      responses:
+        '200':
+          description: Obtiene todos los productos de la tienda
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Nombre del producto
+        '400':
+          description: No se ha podido obtener el listado de los productos
+        '404':
+          description: No se ha encontrado la página.
+    post:
+      tags:
+        - productos
+      summary: Inserta productos a la API tienda
+      description: Inserta productos a la API tienda
+      requestBody:
+        description: Inserta productos a la API tienda
+        content:
+          application/json:
+              schema:
+                type: string
+                example: Nombre del producto
+      responses:
+        '200':
+          description: Producto insertado correctamente
+        '400':
+          description: No se ha podido insertar el producto
+    put:
+      tags:
+        - productos
+      summary: Actualiza los productos
+      description: Servicio que se utiliza para actualizar productos
+      requestBody:
+        description: Actualiza los productos en la API tienda
+        content:
+          application/json:
+            schema:
+                type: string
+                example: Nombre del producto
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+        '400':
+          description: No se ha podido actualizar el producto
+  
+  /producto/id_articulo:
+    get:
+      tags:
+        - productos
+      summary: Encuentra un producto con un id en concreto
+      description: Servicio que sirve para encontrar un producto en concreto
+      responses:
+        '200':
+          description: Se ha encontrado el articulo correctamente
+        '400':
+          description: No se ha encontrado el producto solicitado
+          
