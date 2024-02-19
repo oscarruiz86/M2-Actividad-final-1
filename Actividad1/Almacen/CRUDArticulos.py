@@ -33,11 +33,14 @@ class CRUDArticulos:
 
     def obtener_articulos(self,id_articulo=None):
         conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()        
+        cursor = conn.cursor() 
+        data=None      
         if(id_articulo is not None):
             select='''SELECT * FROM articulos WHERE id = ?'''
-            cursor.execute(select, (id_articulo,))         
-            data = Articulo(*cursor.fetchone())
+            cursor.execute(select, (id_articulo,)) 
+            result = cursor.fetchone()
+            if(result is not None):
+                data = Articulo(*result)
         else:
             select = '''SELECT * FROM articulos'''
             cursor.execute(select)
@@ -52,18 +55,36 @@ class CRUDArticulos:
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()
         cursor.execute('''DELETE FROM articulos WHERE id=?''', (id_articulo,))
+        result = cursor.rowcount
         conn.commit()
         conn.close()
-
+        return result
+    def actualizar_articulo(self, id_articulo,nombre, cantidad,disponible):
+        # //data['nombre'], data['unidad_disponible'], data['disponible']    
+        articulo = self.obtener_articulos(id_articulo)
+        if(articulo is None):
+            return None
+        conn = sqlite3.connect(self.nombre_base_datos)
+        cursor = conn.cursor()
+        cursor.execute('''UPDATE articulos SET nombre = ?, unidad_disponible=?, disponible=? WHERE id=?''',
+                       (nombre,cantidad,disponible, id_articulo))
+        conn.commit()
+        conn.close()
+        return True
     def actualizar_cantidad(self, id_articulo, cantidad, accion):
         articulo = self.obtener_articulos(id_articulo)
+        if(articulo is None):
+            return None
         if (accion == 'recepcion'):
             cantidad = cantidad+articulo.unidad_disponible
         if (accion == 'salida'):
             cantidad = articulo.unidad_disponible-cantidad
+        if(cantidad<0):
+            return False
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()
         cursor.execute('''UPDATE articulos SET unidad_disponible=? WHERE id=?''',
                        (cantidad, id_articulo))
         conn.commit()
         conn.close()
+        return True

@@ -37,7 +37,7 @@ class Almacen:
 
     def trasladoTiendo(self,tienda,id_producto,cantidad):
 
-        url = 'http://localhost:5002/'
+        url = 'http://127.0.0.1:5000/'
         headers  = {'API-Key': 'Almacen'}
 
         ##iniciar cargar inventario inicial

@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: Tienda api 1.0
+  description: |-
+    Esta API proporciona endpoints para administrar todos los prodcutos de una tienda.
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5001/
+tags:
+  - name: productos
+    description:  Administrar todos los productos de una tienda
+paths:
+  /productos:
+    get:
+      tags:
+        - productos
+      summary: Consulta todos los productos disponibles en la tienda
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Producto'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error  
+  /productos/{id_producto}:
+    get:
+      tags:
+        - productos
+      summary: Encuentra un producto con un id en concreto
+      parameters:
+        - name: id_producto
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Producto'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+    delete:
+      tags:
+        - productos
+      summary: Eliminar producto de la tienda
+      parameters:
+        - name: id_producto
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: operación exitosa              
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+  /productos/{id_producto}/editar-precio:      
+    put:
+      tags:
+        - productos
+      summary: Editar precio de producto
+      requestBody:
+      parameters:
+        - name: id_producto
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Precio'      
+      responses:
+        '200':
+          description: operación exitosa                
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+  /productos/{id_producto}/venta:      
+    put:
+      tags:
+        - productos
+      summary: vender producto
+      requestBody:
+      parameters:
+        - name: id_producto
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64       
+      responses:
+        '200':
+          description: operación exitosa                
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+  /productos/{id_producto}/traslado:      
+    put:
+      tags:
+        - productos
+      summary: Realizar traslado del almacen a tienda
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cantidad'
+      parameters:
+        - name: id_producto
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64       
+      responses:
+        '200':
+          description: operación exitosa                
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+components:
+  schemas:
+    Producto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        id_articulo:
+          type: integer
+          format: int64
+          example: 10
+        nombre:
+          type: string
+          example: zapatillas puma
+        unidad_disponible:
+          type: number
+          format: int64
+          example: 10
+        unidad_vendida:
+          type: integer
+          format: int64
+          example: 10
+        precio:
+          type: number
+          format: float
+          example: 10.3
+    Cantidad:
+      type: object
+      properties:
+        cantidad:
+          type: integer
+          format: int64
+          example: 10
+    Precio:
+      type: object
+      properties:
+        precio:
+          type: number
+          format: float
+          example: 10.3
+    Respuesta:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Articulo creado correctamente
+  components:
+  securitySchemes:
+    ApiKeyAuth:   
+      type: apiKey
+      in: header      
+      name: API-Key   
+security:
+  - ApiKeyAuth: [] 
+          

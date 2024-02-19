@@ -1,0 +1,578 @@
+{
+	"info": {
+		"_postman_id": "e9787b65-5d90-4bde-88b3-f873ee2e518f",
+		"name": "Actividad1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7646720",
+		"_collection_link": "https://lively-station-148140.postman.co/workspace/master~39f49755-8f46-455b-a566-04268b086da2/collection/7646720-e9787b65-5d90-4bde-88b3-f873ee2e518f?action=share&source=collection_link&creator=7646720"
+	},
+	"item": [
+		{
+			"name": "almacén",
+			"item": [
+				{
+					"name": "articulos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "articulos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"disponible\": true,\r\n  \"nombre\": \"zapatillas puma\",\r\n  \"unidad_disponible\": 10\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "articulos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos/4",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "articulos/{id_articulo}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos/4",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "articulos/{id_articulo}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"disponible\": true,\r\n  \"nombre\": \"zapatillas puma\",\r\n  \"unidad_disponible\": 10\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos/4",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "articulos/{id_articulo}/recepcion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cantidad\": 10\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos/6/recepcion",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos",
+								"6",
+								"recepcion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/articulos/{id_articulo}/salida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cantidad\": 1\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_almacen}}/articulos/9/salida",
+							"host": [
+								"{{servidor_almacen}}"
+							],
+							"path": [
+								"articulos",
+								"9",
+								"salida"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tienda",
+			"item": [
+				{
+					"name": "productos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_tienda}}/productos",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "productos/{id_prodcuto}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_tienda}}/productos/3",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "productos/{id_producto}",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_tienda}}/productos/4",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "productos/{id_producto}/editar-precio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"precio\": 10.3\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_tienda}}/productos/4/editar-precio",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos",
+								"4",
+								"editar-precio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "productos/{id_producto}/traslado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"cantidad\": 10\r\n}"
+						},
+						"url": {
+							"raw": "{{servidor_tienda}}/productos/8/traslado",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos",
+								"8",
+								"traslado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "productos/{{id_producto}}/venta",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "accept",
+								"value": "*/*"
+							},
+							{
+								"key": "API-Key",
+								"value": "{{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{servidor_tienda}}/productos/5/venta",
+							"host": [
+								"{{servidor_tienda}}"
+							],
+							"path": [
+								"productos",
+								"5",
+								"venta"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

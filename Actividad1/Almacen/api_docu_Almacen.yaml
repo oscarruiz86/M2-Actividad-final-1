@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: Almacen api 1.0
+  description: |-
+    Esta API proporciona endpoints para administrar todos los artículos de un almacén.
+    _Autenticación
+    Para acceder a los endpoints de esta API, se requiere autenticación mediante API-Key.
+    usar la siguiente API-Key.= Almacen_
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:5000/
+tags:
+  - name: articulos
+    description: Administrar todos los articulos de un almacen
+paths:
+  /articulos:
+    get:     
+      tags:
+        - articulos
+      summary: Consulta todos los artículos disponibles en el almacen
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Articulo'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error  
+    post:
+      tags:
+        - articulos
+      summary: Crear artículo en el almacen
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticuloAccion'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Respuesta'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+  /articulos/{id_articulo}:
+    get:
+      tags:
+        - articulos
+      summary: Consulta de artículo por id
+      parameters:
+        - name: id_articulo
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Articulo'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+    put:
+      tags:
+        - articulos
+      summary: Editar informacion de artículo
+      parameters:
+        - name: id_articulo
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticuloAccion'
+      responses:
+        '200':
+          description: Se han obtenido los articulos correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Articulo'                    
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error    
+    delete:
+      tags:
+        - articulos
+      summary: Eliminar artículo del almacen
+      parameters:
+        - name: id_articulo
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: operación exitosa              
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización                
+  /articulos/{id_articulo}/recepcion:      
+    put:
+      tags:
+        - articulos
+      summary: Ingresar artículo en el almacen
+      requestBody:
+      parameters:
+        - name: id_articulo
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cantidad'      
+      responses:
+        '200':
+          description: operación exitosa                
+        '400':
+          description: Acción no realizada
+        '401':
+          description: Sin autorización
+        '500':
+          description: Internal server error
+  /articulos/{id_articulo}/salida:      
+    put:
+      tags:
+        - articulos
+      summary: Retitar artículo del almacen
+      requestBody:
+      parameters:
+        - name: id_articulo
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64  
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cantidad'      
+      responses:
+        '200':
+          description: Producto actualizado correctamente
+        '400':
+          description: No se ha podido actualizar el producto          
+
+components:
+  schemas:
+    Articulo:
+      type: object
+      properties:
+        id_articulo:
+          type: integer
+          format: int64
+          example: 10
+        nombre:
+          type: string
+          example: zapatillas puma
+        unidad_disponible:
+          type: integer
+          format: int64
+          example: 10
+        disponible:
+          type: boolean 
+          example: true
+    ArticuloAccion:
+      type: object
+      properties:
+        nombre:
+          type: string
+          example: zapatillas puma
+        unidad_disponible:
+          type: integer
+          format: int64
+          example: 10
+        disponible:
+          type: boolean 
+          example: true
+    Cantidad:
+      type: object
+      properties:
+        cantidad:
+          type: integer
+          format: int64
+          example: 10
+    Respuesta:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Articulo creado correctamente
+  components:
+  securitySchemes:
+    ApiKeyAuth:   
+      type: apiKey
+      in: header      
+      name: API-Key   
+security:
+  - ApiKeyAuth: [] 

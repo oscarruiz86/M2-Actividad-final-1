@@ -37,13 +37,16 @@ class CRUDProductos:
 
     def obtener_productos(self,id_producto=None):
         conn = sqlite3.connect(self.nombre_base_datos)
-        cursor = conn.cursor()        
+        cursor = conn.cursor()    
+        data=None          
         if(id_producto is not None):
-            select='''SELECT id,nombre, unidad_disponible, precio,id_articulo FROM productos WHERE id = ?'''
-            cursor.execute(select, (id_producto,))         
-            data = Producto(*cursor.fetchone())
+            select='''SELECT id,nombre, unidad_disponible, precio,id_articulo,unidad_vendida FROM productos WHERE id = ?'''
+            cursor.execute(select, (id_producto,))  
+            result = cursor.fetchone()
+            if(result is not None):      
+                data = Producto(*result)
         else:
-            select = '''SELECT id,nombre, unidad_disponible, precio,id_articulo FROM productos'''
+            select = '''SELECT id,nombre, unidad_disponible, precio,id_articulo,unidad_vendida FROM productos'''
             cursor.execute(select)
             filas = cursor.fetchall()
             data = []
@@ -64,10 +67,12 @@ class CRUDProductos:
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()
         producto_tienda = self.obtener_productos(id_producto)
-
+        if(producto_tienda is None):
+            return None
         unidad_vendida = producto_tienda.unidad_vendida+1
         unidad_disponible = producto_tienda.unidad_disponible-1
-
+        print(unidad_vendida)
+        print("unidad_vendida")
         if(unidad_disponible >= 0 and producto_tienda.precio>0):
             cursor.execute('''UPDATE productos SET unidad_vendida=?, unidad_disponible=? WHERE id=?''',
                         (unidad_vendida, unidad_disponible, id_producto))
@@ -81,14 +86,18 @@ class CRUDProductos:
         cursor = conn.cursor()
         cursor.execute('''UPDATE productos SET precio=? WHERE id=?''',
                        (precio, id_producto))
+        result = cursor.rowcount
         conn.commit()
         conn.close()
-
+        return result
+    
     def eliminar_producto(self, id_producto):
         conn = sqlite3.connect(self.nombre_base_datos)
         cursor = conn.cursor()
         cursor.execute('''DELETE FROM productos WHERE id=?''', (id_producto,))
+        result = cursor.rowcount
         conn.commit()
         conn.close()
+        return result
 
     

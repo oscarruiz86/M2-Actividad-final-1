@@ -1,8 +1,9 @@
 import argparse
 from functools import wraps
 from flask import Flask, request, jsonify
-
+from yaml import Loader, load
 from CRUDProductos import CRUDProductos, Producto
+from swaggerui import swaggerui
 from almacen import Almacen
 from loadConfig import LoadConfig
 
@@ -48,19 +49,28 @@ def producto(id_producto):
         crud.actualizar_producto(id_producto, data['nombre'], data['unidad_disponible'], data['precio'])
         return jsonify({'message': 'Producto actualizado correctamente'})
     elif request.method == 'DELETE':
-        crud.eliminar_producto(id_producto)
-        return jsonify({'message': 'Producto eliminado correctamente'}), 204
+        result = crud.eliminar_producto(id_producto)
+        if(result<=0):
+             return jsonify({'message': 'No existe  producto'}), 400
+        else:
+            return jsonify({'message': 'Producto eliminado correctamente'}), 204
     elif request.method == 'GET':
-        producto = crud.obtener_productos(id_producto)
-        return jsonify(vars(producto))
+        result = producto = crud.obtener_productos(id_producto)
+        if(result is None ):
+             return jsonify({'message': 'No existe producto'}), 400
+        else:
+            return jsonify(vars(producto))
     
 @app.route('/productos/<int:id_producto>/editar-precio', methods=['PUT',])
 @validar_api_key
 def producto_editar_precio(id_producto):
     if request.method == 'PUT':
         data = request.json
-        crud.actualizar_precio_producto(id_producto, data['precio'])
-        return jsonify({'message': 'Producto actualizado correctamente'})    
+        result = crud.actualizar_precio_producto(id_producto, data['precio'])
+        if(result <=0 ):
+             return jsonify({'message': 'No existe poducto'}), 400
+        else:
+            return jsonify({'message': 'Producto actualizado correctamente'})    
     
 @app.route('/productos/<int:id_producto>/venta', methods=['PUT',])
 @validar_api_key
@@ -68,7 +78,7 @@ def producto_venta(id_producto):
     if request.method == 'PUT':
         respuesta = crud.vender_producto(id_producto)
         if(respuesta):
-            return jsonify({'message': 'Producto actualizado correctamente'})    
+            return jsonify({'message': 'Producto vendido correctamente'})    
         return jsonify({'error': 'Error al vender producto'})   
 
 @app.route('/productos/<int:id_producto>/traslado', methods=['PUT',])
@@ -79,7 +89,13 @@ def producto_traslado(id_producto):
         respuesta = almacen.trasladoTiendo(crud,id_producto,data['cantidad'])
         if(respuesta):
             return jsonify({'message': 'Traslado de prodcuto realizado correctamente'})    
-        return jsonify({'error': 'Error al vender producto'})  
+        return jsonify({'error': 'Error al trasladar producto'})  
+
+app.register_blueprint(swaggerui())
+@app.route("/services/spec")
+def spec():
+    swagger_yml = load(open('api_docu_Tienda.yaml', 'r', encoding='utf8'), Loader=Loader)
+    return jsonify(swagger_yml)
 
 
 def inicio(servidor,puerto,config_path,key):    
