@@ -8,7 +8,7 @@ info:
     usar la siguiente API-Key.= Almacen_
   version: 1.0.0
 servers:
-  - url: http://127.0.0.1:5000/
+  - url: http://localhost:5000/
 tags:
   - name: articulos
     description: Administrar todos los articulos de un almacen

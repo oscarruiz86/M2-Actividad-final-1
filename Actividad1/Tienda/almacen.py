@@ -7,7 +7,7 @@ class Almacen:
     
     def cargarInvetarioInicial(self,almacen):
         listado = almacen.obtener_productos()
-        url = 'http://localhost:5002/'
+        url = 'http://localhost:5000/'
         headers  = {'API-Key': 'Almacen'}
         if(len(listado) == 0):
             ##iniciar cargar inventario inicial
@@ -37,7 +37,7 @@ class Almacen:
 
     def trasladoTiendo(self,tienda,id_producto,cantidad):
 
-        url = 'http://127.0.0.1:5000/'
+        url = 'http://localhost:5000/'
         headers  = {'API-Key': 'Almacen'}
 
         ##iniciar cargar inventario inicial
